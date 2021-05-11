@@ -1,7 +1,16 @@
 {
   "name": "vue3-scroll-shadow",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "Add UX-friendly shadow to your scrollable list",
+  "keywords": [
+    "vue",
+    "vue 3",
+    "scroll-shadow"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TomatoGuy0502/vue3-scroll-shadow"
+  },
   "main": "dist/vue3-scroll-shadow.ssr.js",
   "browser": "dist/vue3-scroll-shadow.esm.js",
   "module": "dist/vue3-scroll-shadow.esm.js",
