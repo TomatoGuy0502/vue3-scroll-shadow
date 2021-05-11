@@ -2,54 +2,55 @@
   <div
     class="vue3-scroll-shadow"
     :style="{ height }"
-    :class="{ 'off-top': isOffTop, 'off-bottom': isOffBottom }"
-    @scroll.capture="handleScroll"
+    :class="{ 'off-top': scrollState.isOffTop, 'off-bottom': scrollState.isOffBottom }"
   >
-    <div class="vue3-scroll-shadow__content">
+    <div class="vue3-scroll-shadow__content" ref="scrollContent" @scroll="throttledCheckShadow">
       <slot />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, onMounted, onUpdated, reactive, ref } from 'vue'
+import { throttle } from 'lodash'
 
 export default /*#__PURE__*/ defineComponent({
   name: 'Vue3ScrollShadow', // vue component name
-  data() {
-    return {
-      counter: 5,
-      initCounter: 5,
-      message: {
-        action: null,
-        amount: null,
-      },
-      isOffTop: false,
-      isOffBottom: false,
-    }
-  },
   props: {
     height: {
       type: String,
       default: '100%',
     },
-  },
-  methods: {
-    handleScroll({ target }: Event): void {
-      if ((<HTMLDivElement>target).scrollTop > 0) {
-        this.isOffTop = true
-      } else {
-        this.isOffTop = false
-      }
-      if (
-        (<HTMLDivElement>target).offsetHeight + (<HTMLDivElement>target).scrollTop <
-        (<HTMLDivElement>target).scrollHeight - 5
-      ) {
-        this.isOffBottom = true
-      } else {
-        this.isOffBottom = false
-      }
+    throttleWait: {
+      type: Number,
+      default: '100',
     },
+  },
+  setup(props) {
+    const scrollContent = ref<HTMLDivElement | null>(null)
+    const scrollState = reactive({
+      isOffTop: false,
+      isOffBottom: false,
+    })
+
+    const checkShadow = function(): void {
+      console.count('scroll')
+      const { scrollTop, scrollHeight, offsetHeight } = scrollContent.value!
+      scrollState.isOffTop = scrollTop > 0
+      scrollState.isOffBottom = offsetHeight + scrollTop < scrollHeight
+    }
+
+    const throttledCheckShadow = throttle(checkShadow, props.throttleWait)
+
+    onMounted(() => {
+      checkShadow()
+    })
+
+    onUpdated(() => {
+      checkShadow()
+    })
+
+    return { scrollContent, scrollState, throttledCheckShadow }
   },
 })
 </script>
@@ -70,6 +71,7 @@ export default /*#__PURE__*/ defineComponent({
 .vue3-scroll-shadow::after {
   content: '';
   position: absolute;
+  transition: 0.3s;
   height: 15px;
   width: 100%;
   opacity: 0;
@@ -77,12 +79,12 @@ export default /*#__PURE__*/ defineComponent({
 
 .vue3-scroll-shadow::before {
   top: 0;
-  background: linear-gradient(#00000014, transparent);
+  background: linear-gradient(#0000004b, transparent);
 }
 
 .vue3-scroll-shadow::after {
   bottom: 0;
-  background: linear-gradient(to top, #00000014, transparent);
+  background: linear-gradient(to top, #0000004b, transparent);
 }
 
 .vue3-scroll-shadow.off-top::before,
