@@ -75,6 +75,7 @@ export default /*#__PURE__*/ defineComponent({
   height: 15px;
   width: 100%;
   opacity: 0;
+  pointer-events: none;
 }
 
 .vue3-scroll-shadow::before {
