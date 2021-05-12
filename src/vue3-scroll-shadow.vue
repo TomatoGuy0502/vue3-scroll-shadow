@@ -1,17 +1,23 @@
 <template>
-  <div
-    class="vue3-scroll-shadow"
-    :style="{ height }"
-    :class="{ 'off-top': scrollState.isOffTop, 'off-bottom': scrollState.isOffBottom }"
-  >
+  <div class="vue3-scroll-shadow" :style="scrollShadowStyle">
+    <div
+      class="vue3-scroll-shadow__top-shadow"
+      :style="topShadowStyle"
+      :class="{ show: scrollState.isOffTop }"
+    />
     <div class="vue3-scroll-shadow__content" ref="scrollContent" @scroll="throttledCheckShadow">
       <slot />
     </div>
+    <div
+      class="vue3-scroll-shadow__bottom-shadow"
+      :style="bottomShadowStyle"
+      :class="{ show: scrollState.isOffBottom }"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUpdated, reactive, ref } from 'vue'
+import { computed, defineComponent, onMounted, onUpdated, reactive, ref } from 'vue'
 import { throttle } from 'lodash'
 
 export default /*#__PURE__*/ defineComponent({
@@ -25,6 +31,26 @@ export default /*#__PURE__*/ defineComponent({
       type: Number,
       default: '100',
     },
+    shadowColorFrom: {
+      type: String,
+      default: '#00000014',
+      validator: (color: String) => {
+        return (
+          !!color.match(/^#(([0-9a-fA-F]{3}){1,2}|([0-9a-fA-F]{4}){1,2})$/) ||
+          color === 'transparent'
+        )
+      },
+    },
+    shadowColorTo: {
+      type: String,
+      default: 'transparent',
+      validator: (color: String) => {
+        return (
+          !!color.match(/^#(([0-9a-fA-F]{3}){1,2}|([0-9a-fA-F]{4}){1,2})$/) ||
+          color === 'transparent'
+        )
+      },
+    },
   },
   setup(props) {
     const scrollContent = ref<HTMLDivElement | null>(null)
@@ -34,7 +60,6 @@ export default /*#__PURE__*/ defineComponent({
     })
 
     const checkShadow = function(): void {
-      console.count('scroll')
       const { scrollTop, scrollHeight, offsetHeight } = scrollContent.value!
       scrollState.isOffTop = scrollTop > 0
       scrollState.isOffBottom = offsetHeight + scrollTop < scrollHeight
@@ -50,14 +75,39 @@ export default /*#__PURE__*/ defineComponent({
       checkShadow()
     })
 
-    return { scrollContent, scrollState, throttledCheckShadow }
+    // === style setting ===
+    const scrollShadowStyle = computed(() => {
+      return {
+        height: props.height,
+      }
+    })
+
+    const topShadowStyle = computed(() => {
+      return {
+        background: `linear-gradient(${props.shadowColorFrom}, ${props.shadowColorTo})`,
+      }
+    })
+
+    const bottomShadowStyle = computed(() => {
+      return {
+        background: `linear-gradient(to top, ${props.shadowColorFrom}, ${props.shadowColorTo})`,
+      }
+    })
+
+    return {
+      scrollContent,
+      scrollState,
+      throttledCheckShadow,
+      scrollShadowStyle,
+      topShadowStyle,
+      bottomShadowStyle,
+    }
   },
 })
 </script>
 
 <style scoped>
 .vue3-scroll-shadow {
-  height: 100%;
   position: relative;
   overflow-y: hidden;
 }
@@ -67,8 +117,8 @@ export default /*#__PURE__*/ defineComponent({
   overflow-y: auto;
 }
 
-.vue3-scroll-shadow::before,
-.vue3-scroll-shadow::after {
+.vue3-scroll-shadow__top-shadow,
+.vue3-scroll-shadow__bottom-shadow {
   content: '';
   position: absolute;
   transition: 0.3s;
@@ -78,18 +128,15 @@ export default /*#__PURE__*/ defineComponent({
   pointer-events: none;
 }
 
-.vue3-scroll-shadow::before {
+.vue3-scroll-shadow__top-shadow {
   top: 0;
-  background: linear-gradient(#0000004b, transparent);
 }
 
-.vue3-scroll-shadow::after {
+.vue3-scroll-shadow__bottom-shadow {
   bottom: 0;
-  background: linear-gradient(to top, #0000004b, transparent);
 }
 
-.vue3-scroll-shadow.off-top::before,
-.vue3-scroll-shadow.off-bottom::after {
+.show {
   opacity: 1;
 }
 </style>
