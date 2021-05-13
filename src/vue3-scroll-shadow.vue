@@ -6,7 +6,7 @@
       :class="{ show: scrollState.isOffTop }"
     />
     <div class="vue3-scroll-shadow__content" ref="scrollContent" @scroll="throttledCheckShadow">
-      <slot />
+      <slot :scrollState="scrollState" />
     </div>
     <div
       class="vue3-scroll-shadow__bottom-shadow"
@@ -51,6 +51,10 @@ export default /*#__PURE__*/ defineComponent({
         )
       },
     },
+    shadowSize: {
+      type: String,
+      default: '15px',
+    },
   },
   setup(props) {
     const scrollContent = ref<HTMLDivElement | null>(null)
@@ -84,12 +88,14 @@ export default /*#__PURE__*/ defineComponent({
 
     const topShadowStyle = computed(() => {
       return {
+        height: props.shadowSize,
         background: `linear-gradient(${props.shadowColorFrom}, ${props.shadowColorTo})`,
       }
     })
 
     const bottomShadowStyle = computed(() => {
       return {
+        height: props.shadowSize,
         background: `linear-gradient(to top, ${props.shadowColorFrom}, ${props.shadowColorTo})`,
       }
     })
@@ -122,7 +128,6 @@ export default /*#__PURE__*/ defineComponent({
   content: '';
   position: absolute;
   transition: 0.3s;
-  height: 15px;
   width: 100%;
   opacity: 0;
   pointer-events: none;

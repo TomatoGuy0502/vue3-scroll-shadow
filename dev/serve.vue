@@ -31,12 +31,12 @@ export default defineComponent({
     <div class="flex-box" style="height: 60vh">
       <div class="left">left</div>
       <div class="right">
-        <vue3-scroll-shadow :throttleWait="100">
+        <vue3-scroll-shadow :throttleWait="100" v-slot="{ scrollState }">
           <p v-for="num in Array(posts).keys()" :key="num">
-            {{ num }} - Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis officiis
-            quasi accusantium minima, accusamus quibusdam quisquam consectetur odit! In ullam sint
-            ab eaque autem iusto, consequatur quo aut ex neque odio porro provident eligendi, quod
-            quas blanditiis corporis? Aperiam, eveniet?
+            {{ num }} - {{ scrollState }} - Lorem ipsum, dolor sit amet consectetur adipisicing
+            elit. Quis officiis quasi accusantium minima, accusamus quibusdam quisquam consectetur
+            odit! In ullam sint ab eaque autem iusto, consequatur quo aut ex neque odio porro
+            provident eligendi, quod quas blanditiis corporis? Aperiam, eveniet?
           </p>
         </vue3-scroll-shadow>
       </div>
