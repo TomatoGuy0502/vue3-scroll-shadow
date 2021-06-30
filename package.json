@@ -1,6 +1,6 @@
 {
   "name": "vue3-scroll-shadow",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Add UX-friendly shadow to your scrollable list",
   "keywords": [
     "vue",
