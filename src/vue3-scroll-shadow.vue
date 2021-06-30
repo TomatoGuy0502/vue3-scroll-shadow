@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, onUpdated, reactive, ref } from 'vue'
-import { throttle } from 'lodash'
+import throttle from 'lodash/throttle'
 
 export default /*#__PURE__*/ defineComponent({
   name: 'Vue3ScrollShadow', // vue component name
