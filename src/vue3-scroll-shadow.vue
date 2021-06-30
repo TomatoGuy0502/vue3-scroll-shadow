@@ -29,7 +29,7 @@ export default /*#__PURE__*/ defineComponent({
     },
     throttleWait: {
       type: Number,
-      default: '100',
+      default: 100,
     },
     shadowColorFrom: {
       type: String,
